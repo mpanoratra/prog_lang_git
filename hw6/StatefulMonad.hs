@@ -7,6 +7,8 @@ import Stateful hiding (Stateful, evaluate)
 
 data Stateful t = ST (Memory -> (t, Memory))
 
+data CheckedStateful t = CST (Memory -> (Checked t, Memory)) 
+
 instance Monad Stateful where
   return val = ST (\m -> (val, m))
   (ST c) >>= f = 
@@ -16,6 +18,16 @@ instance Monad Stateful where
           f' m'
       )
         
+
+instance Monad CheckedStateful where
+  return val = CST (\m -> (val, m))
+  (CST c) >>= f =
+    CST (\m ->
+      let (val, m') = c m in
+        let CST f' = f val in 
+          f' m'
+      )
+
 evaluate :: Exp -> Env -> Stateful Value
 -- basic operations
 evaluate (Literal v) env = return v
