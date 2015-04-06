@@ -1,7 +1,8 @@
 import Stateful hiding (Stateful, evaluate, execute)
 import Base
-import StatefulMonad 
+--import StatefulMonad 
 import StatefulParse
+import CheckedStatefulMonad
 
 t1 = parseExp ("var x = mutable 3;"++
      "var y = mutable true;"++
