@@ -27,3 +27,7 @@ t6 = parseExp ("var x = 34; x = 8") -- returns an Error that assignment requires
 main = do
   test "evaluate" execute t1
   test "evaluate" execute t2
+  test "evaluate" execute t3
+  test "evaluate" execute t4
+  test "evaluate" execute t5
+  test "evaluate" execute t6
