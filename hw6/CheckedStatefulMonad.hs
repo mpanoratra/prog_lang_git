@@ -1,11 +1,11 @@
 module CheckedStatefulMonad where
 
-import StatefulMonad
+import StatefulMonad hiding (evaluate)
 import Prelude hiding (LT, GT, EQ, id)
 import Base
 import Data.Maybe
 import Stateful hiding (Stateful, evaluate)
-import CheckedMonad
+import CheckedMonad hiding (evaluate)
 --import FirstClassFunctions hiding (evaluate)
 import ErrorChecking
 
@@ -54,16 +54,14 @@ evaluate (Seq a b) env = do
 	evaluate b env
 evaluate (Mutable e) env = do
 	ev <- evaluate e env
-	newMemory ev        
+	liftStateful (newMemory ev)     
 evaluate (Access a) env = do
 	AddressV i <- evaluate a env
-	readMemory i
+	liftStateful (readMemory i)
 evaluate (Assign a e) env = do
 	AddressV i <- evaluate a env
 	ev <- evaluate e env
-	updateMemory ev i
-
-
+	liftStateful (updateMemory ev i)
 evaluate (Call f a) env =
 	do fv <- evaluate f env
 	av <- evaluate a env
@@ -72,6 +70,8 @@ evaluate (Call f a) env =
 			evaluate b ((x, av):env')
 		_ => injectError "Not a function"
 
+
+
 injectError :: String -> CheckedStateful a
 injectError str = 
 	CST (\m -> (Error str, m))
@@ -79,3 +79,6 @@ injectError str =
 liftChecked :: Checked a -> CheckedStateful a
 liftChecked Good a = CST (\m -> (Good a, m))
 liftChecked Error str = injectError str
+
+liftStateful :: Stateful a -> CheckedStateful
+liftStateful \m-> (v, m) = CST(\m -> (Good v, m))
