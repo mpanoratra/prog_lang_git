@@ -113,3 +113,6 @@ injectError str =
 liftChecked :: Checked a -> CheckedStateful a
 liftChecked (Good v) = return v
 
+runCheckedStateful (CST c) = 
+	let (val, mem) = c [] in val
+

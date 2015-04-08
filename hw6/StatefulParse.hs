@@ -1,13 +1,14 @@
 {-# OPTIONS_GHC -w #-}
 module StatefulParse where
-import Prelude hiding (LT, GT, EQ, id)
+import Prelude hiding (LT, GT, EQ)
 import Data.Char
 import Stateful
 import Lexer
 import Operators
 import Control.Applicative(Applicative(..))
+import Control.Monad (ap)
 
--- parser produced by Happy Version 1.19.4
+-- parser produced by Happy Version 1.19.5
 
 data HappyAbsSyn t4 t5 t6 t7 t8 t9 t10 t11
 	= HappyTerminal (Token)
@@ -962,8 +963,8 @@ instance Functor HappyIdentity where
     fmap f (HappyIdentity a) = HappyIdentity (f a)
 
 instance Applicative HappyIdentity where
-    pure    = return
-    a <*> b = (fmap id a) <*> b
+    pure  = return
+    (<*>) = ap
 instance Monad HappyIdentity where
     return = HappyIdentity
     (HappyIdentity p) >>= q = q p
@@ -992,9 +993,16 @@ parseInput = do
   input <- getContents
   print (parseExp input)
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
+{-# LINE 1 "<built-in>" #-}
+{-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp 
 
 
+{-# LINE 13 "templates/GenericTemplate.hs" #-}
+
+
+{-# LINE 46 "templates/GenericTemplate.hs" #-}
 
 
 
@@ -1004,10 +1012,10 @@ parseInput = do
 
 
 
+{-# LINE 67 "templates/GenericTemplate.hs" #-}
 
 
-
-
+{-# LINE 77 "templates/GenericTemplate.hs" #-}
 
 
 
@@ -1041,6 +1049,7 @@ happyAccept j tk st sts (HappyStk ans _) =
 -- Arrays only: do the next action
 
 
+{-# LINE 155 "templates/GenericTemplate.hs" #-}
 
 -----------------------------------------------------------------------------
 -- HappyState data type (not arrays)

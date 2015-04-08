@@ -1,6 +1,6 @@
 {
 module StatefulParse where
-import Prelude hiding (LT, GT, EQ, id)
+import Prelude hiding (LT, GT, EQ)
 import Data.Char
 import Stateful
 import Lexer

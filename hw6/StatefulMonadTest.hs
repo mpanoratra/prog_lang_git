@@ -1,9 +1,10 @@
-import Stateful hiding (Stateful, evaluate, execute)
+--import Stateful hiding (Stateful, evaluate, execute)
 import Base
 --import StatefulMonad 
 import StatefulParse
 import CheckedStatefulMonad
-import FirstClassFunctions
+
+execute exp = runCheckedStateful (evaluate exp [])
 
 t1 = parseExp ("var x = mutable 3;"++
      "var y = mutable true;"++
