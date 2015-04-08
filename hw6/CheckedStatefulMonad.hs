@@ -38,8 +38,8 @@ instance Monad CheckedStateful where
       let (val, m') = c m in
       	let f' = f val
       		in case f' m' of
-      			(Good v, m'') -> CST (\m'' -> (Good v, m''))
-      			(Error str, m'') -> injectError str
+      			(Good v, m'') -> (Good v, m'')
+      			_ -> (Error "error" , m')
           )
 
 evaluate :: Exp -> Env -> CheckedStateful Value
