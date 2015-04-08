@@ -26,6 +26,8 @@ t5 = parseExp ("true = 34") -- returns an Error that assignment requires and add
 
 t6 = parseExp ("var x = 34; x = 8") -- returns an Error that assignment requires and address 
 
+t8 = parseExp ("if (10) {1} else {2}")
+
 main = do
   test "evaluate" execute t1
   test "evaluate" execute t2
@@ -33,3 +35,4 @@ main = do
   test "evaluate" execute t4
   test "evaluate" execute t5
   test "evaluate" execute t6
+  test "evaluate" execute t8

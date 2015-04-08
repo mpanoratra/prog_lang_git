@@ -83,13 +83,17 @@ evaluate (Mutable e) env = do
 	newMemory ev
 
 evaluate (Access a) env = do
-	AddressV i <- evaluate a env
-	readMemory i
+	i <- evaluate a env
+	case i of
+		AddressV i -> readMemory i
+		_ -> injectError "Contents only apply to addresses."
 
 evaluate (Assign a e) env = do
-	AddressV i <- evaluate a env
+	i <- evaluate a env
 	ev <- evaluate e env
-	updateMemory ev i
+	case i of
+		AddressV i -> updateMemory ev i
+		_ -> injectError "Assignment requires an address."
 
 evaluate (Call f a) env = do 
 	fv <- evaluate f env
@@ -112,6 +116,7 @@ injectError str =
 
 liftChecked :: Checked a -> CheckedStateful a
 liftChecked (Good v) = return v
+liftChecked (Error str) = injectError str
 
 runCheckedStateful (CST c) = 
 	let (val, mem) = c [] in val
