@@ -1,7 +1,7 @@
 module CheckedMonad where
 
 import Prelude hiding (LT, GT, EQ, id)
-import FirstClassFunctions hiding (evaluate)
+--import FirstClassFunctions hiding (evaluate)
 import ErrorChecking hiding (evaluate)
 
 instance Monad Checked where

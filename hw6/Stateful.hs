@@ -29,6 +29,7 @@ data Exp = Literal   Value
          | Variable  String
          | Declare   String Exp Exp
          | Function  String Exp
+         | TryCatch  Exp Exp
          | Call      Exp Exp
          | Seq       Exp Exp
          | Mutable   Exp         -- new

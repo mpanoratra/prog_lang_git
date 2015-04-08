@@ -1,7 +1,7 @@
 module ErrorChecking where
 
 import Prelude hiding (LT, GT, EQ, id)
-import FirstClassFunctions hiding (evaluate)
+import Stateful hiding (evaluate)
 import Operators
 
 data Checked a = Good a | Error String

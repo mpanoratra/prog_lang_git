@@ -1,13 +1,13 @@
 module CheckedStatefulMonad where
 
-import StatefulMonad hiding (evaluate)
-import Prelude hiding (LT, GT, EQ, id)
-import Base
-import Data.Maybe
+import StatefulMonad hiding (evaluate, newMemory, readMemory, updateMemory)
+--import Prelude hiding (LT, GT, EQ, id)
+--import Base
+--import Data.Maybe
 import Stateful hiding (Stateful, evaluate)
-import CheckedMonad hiding (evaluate)
+--import CheckedMonad hiding (evaluate)
 --import FirstClassFunctions hiding (evaluate)
-import qualified FirstClassFunctions as F
+----import qualified FirstClassFunctions as F
 import ErrorChecking hiding (evaluate)
 
 
@@ -35,12 +35,11 @@ instance Monad CheckedStateful where
   return val = CST (\m -> (Good val, m))
   (CST c) >>= f =
     CST (\m -> 
-      let
-      	(val, m') = c m 
-      	f' = case of f val
-      		injectError val ->  
-      	in f' m'
-
+      let (val, m') = c m in
+      	let f' = f val
+      		in case f' m' of
+      			--ST m (v, m') -> CST(\m' -> (Good v, m'))
+      			--_ -> injectError "some error"
           )
 
 
@@ -73,26 +72,26 @@ evaluate (Variable x) env =
 		Nothing -> injectError ("Variable " ++ x ++ " undefined")
 		Just v -> return v
 
-evaluate (Function x body env) = 
-	return (ClosureV  x body env)
+evaluate (Function x body) env = 
+	return (ClosureV x body env)
 
 -- mutation operations
---evaluate (Seq a b) env = do
---	evaluate a env
---	evaluate b env
+evaluate (Seq a b) env = do
+	evaluate a env
+	evaluate b env
 
---evaluate (Mutable e) env = do
---	ev <- evaluate e env
---	liftStateful (newMemory ev)
+evaluate (Mutable e) env = do
+	ev <- evaluate e env
+	newMemory ev
 
---evaluate (Access a) env = do
---	AddressV i <- evaluate a env
---	liftStateful (readMemory i)
+evaluate (Access a) env = do
+	AddressV i <- evaluate a env
+	readMemory i
 
---evaluate (Assign a e) env = do
---	AddressV i <- evaluate a env
---	ev <- evaluate e env
---	liftStateful (updateMemory ev i)
+evaluate (Assign a e) env = do
+	AddressV i <- evaluate a env
+	ev <- evaluate e env
+	updateMemory ev i
 
 evaluate (Call f a) env = do 
 	fv <- evaluate f env
@@ -103,14 +102,16 @@ evaluate (Call f a) env = do
 		_ -> injectError "Not a function"
 
 
+newMemory val = CST (\mem-> (Good(AddressV (length mem)), mem ++ [val]))
+
+readMemory i = CST (\mem-> (Good (access i mem), mem))
+
+updateMemory val i = CST (\mem-> (Good val, update i val mem))
 
 injectError :: String -> CheckedStateful a
 injectError str = 
 	CST (\m -> (Error str, m))
 
 liftChecked :: Checked a -> CheckedStateful a
-liftChecked Good a = CST (\m -> (Good a, m))
-liftChecked Error str = injectError str
+liftChecked (Good v) = return v
 
---liftStateful :: Stateful a -> CheckedStateful
---liftStateful (\m-> (v, m)) = CST(\m -> (v, m))
