@@ -3,6 +3,7 @@ import Base
 --import StatefulMonad 
 import StatefulParse
 import CheckedStatefulMonad
+import FirstClassFunctions
 
 t1 = parseExp ("var x = mutable 3;"++
      "var y = mutable true;"++

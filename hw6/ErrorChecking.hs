@@ -1,7 +1,60 @@
+module ErrorChecking where
+
+import Prelude hiding (LT, GT, EQ, id)
+import FirstClassFunctions hiding (evaluate)
+import Operators
+
 data Checked a = Good a | Error String
   deriving Show
 
+evaluate :: Exp -> Env -> Checked Value
+
+evaluate (Literal v) env = Good v
+
+evaluate (Variable x) env =
+  case lookup x env of
+    Nothing -> Error ("Variable " ++ x ++ " undefined")
+    Just v  -> Good v
+
+evaluate (Unary op a) env =
+  case evaluate a env of
+    Error msg -> Error msg
+    Good av ->   checked_unary op av
+
+evaluate (Binary op a b) env =
+  case evaluate a env of
+    Error msg -> Error msg
+    Good av ->
+      case evaluate b env of
+        Error msg -> Error msg
+        Good bv ->
+          checked_binary op av bv
+
+evaluate (If cond ifb elseb) env = case evaluate cond env of
+  Error m -> Error m
+  Good (BoolV True)  -> evaluate ifb env
+  Good (BoolV False) -> evaluate elseb env
+  _ -> Error "invalid condition"
+
+evaluate (Declare n exp body) env = case evaluate exp env of
+  Error m -> Error m
+  Good  v -> evaluate body $ (n, v) : env 
+
+evaluate (Function n body) env = Good $ ClosureV n body env
+
+evaluate (Call fun arg) env = case evaluate fun env of
+  Error m -> Error m
+  Good (ClosureV n body closeEnv) -> case evaluate arg env of
+    Error m -> Error m
+    Good  v -> evaluate body $ (n, v) : closeEnv
+  _ -> Error "not a function"
   
+evaluate (TryCatch tb cb) env = case evaluate tb env of  
+  Error _ -> evaluate cb env
+  Good  v -> Good v
+
+execute exp = evaluate exp []
+
 checked_unary :: UnaryOp -> Value -> Checked Value
 checked_unary Not (BoolV b) = Good (BoolV (not b))
 checked_unary Neg (IntV i)  = Good (IntV (-i))
