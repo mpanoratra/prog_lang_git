@@ -32,14 +32,14 @@ data CheckedStateful t = CST (Memory -> (Checked t, Memory))
 --  in f val1 val2
 
 instance Monad CheckedStateful where
-  return val = CST (\m -> (Good val, m))
+  return val = CST(\m -> (Good val, m))
   (CST c) >>= f =
     CST (\m -> 
       let (val, m') = c m in
-      	let f' = f val
-      		in case f' m' of
-      			(Good v, m'') -> (Good v, m'')
-      			_ -> (Error "error" , m')
+      	case val of
+      		Good v -> let CST f' = f v in
+      			f' m'
+      		Error str -> (Error str, m')
           )
 
 evaluate :: Exp -> Env -> CheckedStateful Value
