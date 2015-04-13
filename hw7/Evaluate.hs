@@ -12,11 +12,13 @@ type Interpreter r = CheckedStateful Memory r
 execInterpreter :: Interpreter a -> Checked a
 execInterpreter i = let (v, m) = runCST [] i in v
 
+runInterpreter :: Interpreter a -> Memory -> (Checked a, Memory)
+
 --Evaluate an expression starting with an empty environment
 eval :: Exp -> Checked Value
 eval e = execInterpreter (evaluate e [])
 
-handleReturn :: CheckedStateful Value -> CheckedStateful Value
+handleReturn :: Interpreter Value -> Interpreter Value
 
 evaluate :: Exp -> Env -> Interpreter Value
 evaluate e env = case e of
