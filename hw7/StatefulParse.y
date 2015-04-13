@@ -19,6 +19,8 @@ import Data.Char
     false { TokenKeyword "false" }
     var   { TokenKeyword "var" }
     mutable { TokenKeyword "mutable" }
+    return { TokenKeyword "return"}
+    undefined { TokenKeyword "undefined"}
     ';'   { Symbol ";" }
     id    { TokenIdent $$ }
     digits { Digits $$ }
@@ -47,6 +49,7 @@ Exp : function '(' id ')' '{' Exp '}'  { Function $3 $6 }
     | var id '=' Exp ';' Exp           { Declare $2 $4 $6 }
     | if '(' Exp ')' '{' Exp '}' else '{' Exp '}'  { If $3 $6 $10 }
     | Exp ';' Exp                      { Seq $1 $3 }
+    | return Exp                       { Return $2 }
     | Assign                           { $1 }
 
 Assign : Or '=' Assign    { Assign $1 $3 }
@@ -77,6 +80,7 @@ Primary : Primary '(' Exp ')' { Call $1 $3 }
         | digits         { Literal (IntV $1) }
         | true           { Literal (BoolV True) }
         | false          { Literal (BoolV False) }
+        | undefined      { Literal (UndefinedV) }
         | '-' Primary    { Unary Neg $2 }
         | '!' Primary    { Unary Not $2 }
         | '@' Primary    { Access $2 }
@@ -87,7 +91,7 @@ Primary : Primary '(' Exp ')' { Call $1 $3 }
 {
 
 symbols = ["+", "-", "*", "/", "(", ")", "{", "}", ";", "==", "=", "<=", ">=", "<", ">", "||", "&&", "!", "@"]
-keywords = ["function", "var", "if", "else", "true", "false", "mutable"]
+keywords = ["function", "var", "if", "else", "true", "false", "mutable", "return", "undefined"]
 parseExp str = parser (lexer symbols keywords str)
 
 parseInput = do

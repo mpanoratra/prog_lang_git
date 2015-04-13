@@ -12,6 +12,7 @@ data Value = IntV  Int
            | BoolV Bool
            | ClosureV String Exp Env
            | AddressV Int
+           | UndefinedV
   deriving (Eq, Show)
 
 data Exp = Literal   Value

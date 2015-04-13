@@ -29,6 +29,7 @@ unary Not = fmap (BoolV . not)    . asBool
 unary Neg = fmap (IntV  . negate) . asInt
 
 binary :: BinaryOp -> Value -> Value -> Maybe Value
+binary Div (IntV _) (IntV 0) = Nothing
 binary op l r = let
   intOp c f = fmap c $ liftM2 f (asInt l) (asInt r)
   boolOp f  = fmap BoolV $ liftM2 f (asBool l) (asBool r)

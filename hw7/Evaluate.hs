@@ -16,6 +16,8 @@ execInterpreter i = let (v, m) = runCST [] i in v
 eval :: Exp -> Checked Value
 eval e = execInterpreter (evaluate e [])
 
+handleReturn :: CheckedStateful Value -> CheckedStateful Value
+
 evaluate :: Exp -> Env -> Interpreter Value
 evaluate e env = case e of
   (Literal v)     -> return v
