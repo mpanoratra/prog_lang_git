@@ -12,13 +12,20 @@ type Interpreter r = CheckedStateful Memory r
 execInterpreter :: Interpreter a -> Checked a
 execInterpreter i = let (v, m) = runCST [] i in v
 
-runInterpreter :: Interpreter a -> Memory -> (Checked a, Memory)
+--runInterpreter :: Interpreter a -> Memory -> (Checked a, Memory)
 
 --Evaluate an expression starting with an empty environment
 eval :: Exp -> Checked Value
 eval e = execInterpreter (evaluate e [])
 
 handleReturn :: Interpreter Value -> Interpreter Value
+handleReturn (CheckedStateful f) = 
+  CheckedStateful(\m -> 
+    let (cv, m') = f m in
+      (case cv of
+        Error msg -> Error msg
+        Good v -> Good UndefinedV
+        Returning v -> Good v, m'))
 
 evaluate :: Exp -> Env -> Interpreter Value
 evaluate e env = case e of
@@ -53,10 +60,15 @@ evaluate e env = case e of
     case fun of
       ClosureV argname body clEnv -> do
         argval <- evaluate arg env
-        evaluate body $ (argname, argval) : clEnv
+        handleReturn(evaluate body $ (argname, argval) : clEnv)
       val -> throwError $ show val ++ " is not a function"
     
   (Seq a b)   -> evaluate a env >> evaluate b env
+
+  (Return ret) -> do
+    v <- evaluate ret env
+    liftChecked (Returning v)
+
   (Mutable e) -> do
     ev <- evaluate e env
     mem <- get

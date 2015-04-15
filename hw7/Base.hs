@@ -23,6 +23,7 @@ data Exp = Literal   Value
          | Declare   String Exp Exp
          | Function  String Exp
          | Call      Exp Exp
+         | Return    Exp
          | Seq       Exp Exp
          | Mutable   Exp
          | Access    Exp
@@ -31,4 +32,4 @@ data Exp = Literal   Value
 
 type Memory = [Value]
 
-data Checked a = Good a | Error String deriving (Eq, Show)
+data Checked a = Good a | Error String | Returning Value deriving (Eq, Show)

@@ -18,7 +18,10 @@ instance Monad (CheckedStateful s) where
       (Good v) -> let
         (CheckedStateful second) = secondF v
         in second m'
-      Error msg -> (Error msg, m') 
+      Error msg -> (Error msg, m')
+      --(Returning val) -> let
+      --  (CheckedStateful second) = secondF val
+      --    in second m'
 
 instance Monad Checked where
   return = Good
@@ -52,6 +55,9 @@ throwError msg = CheckedStateful $ \s -> (Error msg, s)
 liftMaybe :: String -> Maybe v -> CheckedStateful s v
 liftMaybe _ (Just v) = return v
 liftMaybe m Nothing  = throwError m
+
+liftChecked :: Checked a -> CheckedStateful s a
+liftChecked v = CheckedStateful (\m -> (v, m))
 
 --Supply the initial state to a CheckedStateful computation
 runCST :: s -> CheckedStateful s a -> (Checked a, s)

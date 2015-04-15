@@ -42,7 +42,7 @@ binary op l r = let
     --int ops returning bool
     Less         -> intOp BoolV (<)
     LessEqual    -> intOp BoolV (<=)
-    Equal        -> intOp BoolV (==)
+    Equal        -> Just $ BoolV $ l == r
     GreaterEqual -> intOp BoolV (>=)
     Greater      -> intOp BoolV (>)
     --bool ops (all return bool)

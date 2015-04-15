@@ -19,19 +19,18 @@ t2 = parseExp ("var x = mutable 3;"++
      "y = @y * @x")
 
 -- Returning a value makes the function call expression evaluate to the value returned
-t3 = parseExp ("var id = function (x) { return x };"++
-			   "id(3)")
---===> Good 3
+t3 = parseExp ("var id = function (x) { return x }; id(3)")
+-- Good 3
 
 -- Calls to functions that do not use return evaluate to Undefined
-t4 = parseExp ("var proc = function (z) { z };"
+t4 = parseExp ("var proc = function (z) { z };" ++
 			   "proc(2)")
---===> Good Undefined
+--Good Undefined
 
 -- Return exits the function body immediately
-t5 = parseExp ("var early = function (x) { return x; x / 0 };"
+t5 = parseExp ("var early = function (x) { return x; x / 0 };" ++
 			   "early(2)")
---===> Good 2
+--Good 2
 
 --main :: IO ()
 main = do
