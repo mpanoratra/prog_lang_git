@@ -33,3 +33,5 @@ data Exp = Literal   Value
 type Memory = [Value]
 
 data Checked a = Good a | Error String | Returning Value deriving (Eq, Show)
+
+--data Returning a = Checked a deriving (Eq, Show)

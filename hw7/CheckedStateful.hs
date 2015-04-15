@@ -19,9 +19,7 @@ instance Monad (CheckedStateful s) where
         (CheckedStateful second) = secondF v
         in second m'
       Error msg -> (Error msg, m')
-      --(Returning val) -> let
-      --  (CheckedStateful second) = secondF val
-      --    in second m'
+      (Returning val) -> (Returning val, m')
 
 instance Monad Checked where
   return = Good
