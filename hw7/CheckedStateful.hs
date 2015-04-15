@@ -1,3 +1,6 @@
+-- Taylor Smith tls2864 smithleet@utexas.edu
+-- Danny Nguyen dtn384 dannytnguyen91@gmail.com
+
 module CheckedStateful where
 
 import Base
